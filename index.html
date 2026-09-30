@@ -30,7 +30,8 @@
   .entete h1 { font-size: clamp(32px, 5vw, 48px); line-height: 1.1; }
   .entete p { color: var(--gris); max-width: 620px; margin: 12px 0 0; }
 
-  .choix { display: inline-flex; background: var(--blanc); border: 1px solid var(--trait); border-radius: 999px; padding: 4px; margin-top: 24px; }
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-top: 24px; }
+  .choix { display: inline-flex; background: var(--blanc); border: 1px solid var(--trait); border-radius: 999px; padding: 4px; }
   .choix button { border: 0; background: none; font: 600 15px "Nunito Sans", sans-serif; color: var(--gris); padding: 10px 26px; border-radius: 999px; cursor: pointer; }
   .choix button[aria-selected="true"] { background: var(--encre); color: #fff; }
 
@@ -52,6 +53,7 @@
   .nav { position: sticky; top: 0; z-index: 5; background: rgba(251, 249, 246, .94); backdrop-filter: blur(8px); border-bottom: 1px solid var(--trait); margin-top: 32px; }
   .nav div { max-width: 1120px; margin: 0 auto; padding: 12px 24px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
   .nav a { flex: 0 0 auto; text-decoration: none; color: var(--encre); font-size: 14px; font-weight: 600; border: 1px solid var(--trait); background: var(--blanc); border-radius: 999px; padding: 7px 15px; }
+  .nav a.bouton-nav { margin-left: auto; background: var(--rose); border-color: var(--rose); color: #fff; }
   .nav a.actif { background: var(--rose); border-color: var(--rose); color: #fff; }
 
   main { max-width: 1120px; margin: 0 auto; padding: 8px 24px 40px; }
@@ -85,6 +87,7 @@
     .entete { padding: 32px 16px 16px; }
     .formules, .populaires, main { padding-left: 16px; padding-right: 16px; }
     .nav div { padding: 10px 16px; }
+    .nav a.bouton-nav { display: none; }
     .formules { grid-template-columns: 1fr 1fr; gap: 8px; }
     .formule { padding: 12px 14px; }
     .formule .remise { float: none; display: inline-block; margin-bottom: 4px; }
@@ -114,9 +117,12 @@
 <header class="entete">
   <h1 id="titre">Tarifs épilation laser à Paris</h1>
   <p id="chapeau"></p>
-  <div class="choix" role="tablist">
-    <button role="tab" data-public="femme">Femme</button>
-    <button role="tab" data-public="homme">Homme</button>
+  <div class="actions">
+    <div class="choix" role="tablist">
+      <button role="tab" data-public="femme">Femme</button>
+      <button role="tab" data-public="homme">Homme</button>
+    </div>
+    <a class="bouton" href="https://www.doctolib.fr/centre-laser-et-esthetique/paris/centre-marceau/booking/motives?specialityId=362&amp;telehealth=false&amp;placeId=practice-117497&amp;motiveCategoryIds%5B%5D=157547&amp;profile_skipped=true&amp;bookingFunnelSource=external_referral" target="_blank" rel="noopener">Prendre rendez-vous</a>
   </div>
 </header>
 
@@ -232,7 +238,8 @@ function afficher(publicVise) {
     <h2>Les zones les plus demandées</h2>
     <div class="cartes">${d.populaires.map(([z, m]) => `<div class="carte"><span>${echapper(z)}</span><small>à partir de </small><b>${m} €</b><small> / mois*</small></div>`).join("")}</div>` : "";
 
-  document.getElementById("nav").innerHTML = d.grilles.map(([id, nom]) => `<a href="#${id}" data-cible="${id}">${nom}</a>`).join("");
+  document.getElementById("nav").innerHTML = d.grilles.map(([id, nom]) => `<a href="#${id}" data-cible="${id}">${nom}</a>`).join("") +
+    `<a class="bouton-nav" href="https://www.doctolib.fr/centre-laser-et-esthetique/paris/centre-marceau/booking/motives?specialityId=362&amp;telehealth=false&amp;placeId=practice-117497&amp;motiveCategoryIds%5B%5D=157547&amp;profile_skipped=true&amp;bookingFunnelSource=external_referral" target="_blank" rel="noopener">Prendre rendez-vous</a>`;
 
   const entetes = `<th>Zone</th><th>Séance à l'unité</th><th>Forfait 4+1<small>par séance</small></th><th class="col-phare">Forfait 6+2<small>par séance</small></th>` +
     (d.mensualites ? `<th>Mensualités*<small>sur 18 mois</small></th>` : "");
@@ -261,7 +268,7 @@ function suivreSections() {
   observateur = new IntersectionObserver(entrees => {
     entrees.forEach(e => {
       if (!e.isIntersecting) return;
-      document.querySelectorAll(".nav a").forEach(a => a.classList.toggle("actif", a.dataset.cible === e.target.id));
+      document.querySelectorAll(".nav a[data-cible]").forEach(a => a.classList.toggle("actif", a.dataset.cible === e.target.id));
       const actif = document.querySelector(".nav a.actif");
       if (actif) actif.scrollIntoView({ block: "nearest", inline: "nearest" });
     });
